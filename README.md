@@ -9,4 +9,4 @@ The KSPVessel.cs currently allows to manouver the vessel. I guess
 
 Im currently using the [BepInEx](https://github.com/BepInEx/BepInEx) modding framework.
 
-Feel free yo join me on [Discord](https://discord.gg/tTQTZgsC)
+Feel free to join me on [Discord](https://discord.gg/tTQTZgsC)
