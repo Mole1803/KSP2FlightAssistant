@@ -3,7 +3,7 @@ A simple KSP2 Flight Assistant
 
 What can it do RN? You might ask.
 
-Currently, basically nothing. 
+Currently, basically nothing. Hopefully, I will change this during the next Time.
 
 The KSPVessel.cs currently allows to manouver the vessel. I guess 
 
