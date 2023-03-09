@@ -1,6 +1,8 @@
 ﻿using KSP.Game;
+using KSP.Sim;
 using KSP.Sim.impl;
 using KSP.Sim.State;
+
 
 namespace KSP2FlightAssistant;
 
@@ -8,150 +10,311 @@ public class KSPVessel
 {
 
     public GameInstance Game;
-    public VesselComponent VesselComponent;
+
     private TelemetryDataProvider telemetryDataProvider;
+    
+    private VesselComponent VesselComponent;
+    private FlightCtrlState flightCtrlState;
+    private VesselDataProvider VesselDataProvider;
+    
+
 
     
     public KSPVessel(GameInstance Game)
     {
+
         this.Game = Game;
+        
         VesselComponent = GetActiveSimVessel();
+        VesselDataProvider = Game.ViewController.DataProvider.VesselDataProvider;
+        
         telemetryDataProvider = Game.ViewController.DataProvider.TelemetryDataProvider;
+        
 
     }
     
+    //==================================================================================================================
+    
+    /// <summary>
+    /// Retrieve the active vessel from the game
+    /// </summary>
+    /// <returns> VesselComponent</returns>
     private VesselComponent GetActiveSimVessel()
     {
         return  Game.ViewController.GetActiveSimVessel();
     }
-
-    public void SetYaw(float yaw)
+    
+    
+    // Available Instructions===========================================================================================
+    
+    
+    // Values
+    public void SetThrottle(float throttle)
     {
-        FlightCtrlState fcs = GetFlightCtrlState();
-        fcs.yaw = yaw;
-        UpdateFlightState(fcs);
+        flightCtrlState.mainThrottle = throttle;
     }
-
+    
     public void SetPitch(float pitch)
     {
-        FlightCtrlState fcs = GetFlightCtrlState();
-        fcs.pitch = pitch;
-        UpdateFlightState(fcs);
-        
+        flightCtrlState.pitch = pitch;
     }
     
     public void SetRoll(float roll)
     {
-        FlightCtrlState fcs = this.GetFlightCtrlState();
-        fcs.roll = roll;
-        UpdateFlightState(fcs);
+        flightCtrlState.roll = roll;
     }
     
-    public void SetThrottle(float throttle)
+    public void SetYaw(float yaw)
     {
-        FlightCtrlState fcs = this.GetFlightCtrlState();
-        fcs.mainThrottle = throttle;
-        UpdateFlightState(fcs);
-        
+        flightCtrlState.yaw = yaw;
     }
-
-    public void SetKillRot(bool killRot)
+    
+    
+    public void SetWheelSteer(float wheelSteer)
     {
-        FlightCtrlState fcs = GetFlightCtrlState();
-        fcs.killRot = killRot;
-        UpdateFlightState(fcs);
+        flightCtrlState.wheelSteer = wheelSteer;
+    }
+    
+    
+    public void SetWheelThrottle(float wheelThrottle)
+    {
+        flightCtrlState.wheelThrottle = wheelThrottle;
+    }
+    
+    
+    // Trims
+    
+    public void SetPitchTrim(float pitchTrim)
+    {
+        flightCtrlState.pitchTrim = pitchTrim;
     }
     
     public void SetYawTrim(float yawTrim)
     {
-        FlightCtrlState fcs = GetFlightCtrlState();
-        fcs.yawTrim = yawTrim;
-        UpdateFlightState(fcs);
+        flightCtrlState.yawTrim = yawTrim;
     }
-    
-    public void SetPitchTrim(float pitchTrim)
-    {
-        FlightCtrlState fcs = GetFlightCtrlState();
-        fcs.pitchTrim = pitchTrim;
-        UpdateFlightState(fcs);
-    }
-    
+
     public void SetRollTrim(float rollTrim)
     {
-        FlightCtrlState fcs = GetFlightCtrlState();
-        fcs.rollTrim = rollTrim;
-        UpdateFlightState(fcs);
+        flightCtrlState.rollTrim = rollTrim;
     }
     
-    public void SetYawInput(float yawInput)
+    public void SetWheelSteerTrim(float wheelSteerTrim)
     {
-        FlightCtrlState fcs = GetFlightCtrlState();
-        fcs.inputYaw = yawInput;
-        UpdateFlightState(fcs);
+        flightCtrlState.wheelSteerTrim = wheelSteerTrim;
     }
     
-    public void SetPitchInput(float pitchInput)
+    // Input
+    
+    public void SetInputPitch(float inputPitch)
     {
-        FlightCtrlState fcs = GetFlightCtrlState();
-        fcs.inputPitch = pitchInput;
-        UpdateFlightState(fcs);
+        flightCtrlState.inputPitch = inputPitch;
     }
     
-    public void SetRollInput(float rollInput)
+    public void SetInputRoll(float inputRoll)
     {
-        FlightCtrlState fcs = GetFlightCtrlState();
-        fcs.inputRoll = rollInput;
-        UpdateFlightState(fcs);
+        flightCtrlState.inputRoll = inputRoll;
     }
     
-    public void SetThrottleMin()
+    public void SetInputYaw(float inputYaw)
     {
-        FlightCtrlState fcs = GetFlightCtrlState();
-        fcs.mainThrottle = 0f;
-        UpdateFlightState(fcs);
+        flightCtrlState.inputYaw = inputYaw;
     }
     
-    public void SetThrottleMax()
+    
+
+    
+    
+    
+    //==================================================================================================================
+
+    /// <summary>
+    /// Start a set of instructions. Has to be called before any other instruction.
+    /// See Instruction Set for all available instructions.
+    /// Wipes the previous instruction set.
+    /// Fetches the VesselComponent.
+    /// To Execute the instruction set call ExecuteControlInstruction()
+    /// </summary>
+    public void StartControlInstruction()
     {
-        FlightCtrlState fcs = GetFlightCtrlState();
-        fcs.mainThrottle = 1f;
-        UpdateFlightState(fcs);
+        // Get the active Vessel
+        VesselComponent = GetActiveSimVessel();
+        // Create a new Flight Instruction set of typ: FlightCtrlState
+        flightCtrlState = new FlightCtrlState();
     }
-    
     
     /// <summary>
-    /// Updates the internal flight state of the vessel.
-    ///
+    /// Executes the instruction set.
     /// </summary>
-    private void UpdateFlightState(FlightCtrlState flightCtrlState)
+    
+    public void ExecuteControlInstruction()
     {
-        FlightCtrlStateIncremental FCSI = VesselComponent.flightCtrlState.MakeIncrementalDiff(flightCtrlState);
+        // Send the new flight instructions to the Vessel
+        VesselComponent.SetFlightControlState(flightCtrlState);
+        // Sync the VesselDataProvider and VesselComponent
+        VesselDataProvider.SyncTo(VesselComponent);
+        // Execute the instruction
+        Game.ViewController.DataProvider.ActiveVessel.SetValueInternal(VesselDataProvider);
+    }
 
-        VesselComponent.ApplyFlightCtrlState(FCSI);
-    }
+    // =================================================================================================================
     
-    private FlightCtrlState GetFlightCtrlState()
-    {
-        return VesselComponent.flightCtrlState;
-    }
+    // AutoPilot========================================================================================================
+    // Note: No Instruction set needed can be called as is
     
+    /// <summary>
+    /// Enables or disables the SAS
+    /// 
+    /// </summary>
+    /// <param name="sas"></param>
     public void SetSAS(bool sas)
     {
         Game.ViewController.DataProvider.TelemetryDataProvider.SASRetrograde.SetValueInternal(sas);
     }
     
+    
+    // Telemetry Data===================================================================================================
+
+    /// <summary>
+    /// Retrieve the current activation value of yaw
+    /// </summary>
+    public double GetYaw()
+    {
+        return Game.ViewController.GetActiveSimVessel().flightCtrlState.yaw;
+    }
+    
+    
+    /// <summary>
+    /// Retrieve the current activation value of pitch
+    /// </summary>
+    public double GetPitch()
+    {
+        return Game.ViewController.GetActiveSimVessel().flightCtrlState.pitch;
+    }
+    
+    /// <summary>
+    /// Retrieve the current activation value of roll
+    /// </summary>
+    public double GetRoll()
+    {
+        return Game.ViewController.GetActiveSimVessel().flightCtrlState.roll;
+    }
+    
+    /// <summary>
+    /// Retrieve the current activation value of throttle
+    /// </summary>
+    public double GetThrottle()
+    {
+        return Game.ViewController.GetActiveSimVessel().flightCtrlState.mainThrottle;
+    }
+    
+    /// <summary>
+    /// Retrieve the current activation value of wheelSteer
+    /// </summary>
+    public double GetWheelSteer()
+    {
+        return Game.ViewController.GetActiveSimVessel().flightCtrlState.wheelSteer;
+    }
+    
+    /// <summary>
+    /// Retrieve the current activation value of wheelThrottle
+    /// </summary>
+    public double GetWheelThrottle()
+    {
+        return Game.ViewController.GetActiveSimVessel().flightCtrlState.wheelThrottle;
+    }
+    
+    /// <summary>
+    /// Retrieve the current activation value of pitchTrim
+    /// </summary>
+    public double GetPitchTrim()
+    {
+        return Game.ViewController.GetActiveSimVessel().flightCtrlState.pitchTrim;
+    }
+    
+    /// <summary>
+    /// Retrieve the current activation value of yawTrim
+    /// </summary>
+    public double GetYawTrim()
+    {
+        return Game.ViewController.GetActiveSimVessel().flightCtrlState.yawTrim;
+    }
+    
+    /// <summary>
+    /// Retrieve the current activation value of rollTrim
+    /// </summary>
+    public double GetRollTrim()
+    {
+        return Game.ViewController.GetActiveSimVessel().flightCtrlState.rollTrim;
+    }
+    
+    /// <summary>
+    /// Retrieve the current activation value of wheelSteerTrim
+    /// </summary>
+    public double GetWheelSteerTrim()
+    {
+        return Game.ViewController.GetActiveSimVessel().flightCtrlState.wheelSteerTrim;
+    }
+    
+    /// <summary>
+    /// Retrieve the current activation value of inputPitch
+    /// </summary>
+    public double GetInputPitch()
+    {
+        return Game.ViewController.GetActiveSimVessel().flightCtrlState.inputPitch;
+    }
+    
+    /// <summary>
+    /// Retrieve the current activation value of inputRoll
+    /// </summary>
+    public double GetInputRoll()
+    {
+        return Game.ViewController.GetActiveSimVessel().flightCtrlState.inputRoll;
+    }
+    
+    /// <summary>
+    /// Retrieve the current activation value of inputYaw
+    /// </summary>
+    public double GetInputYaw()
+    {
+        return Game.ViewController.GetActiveSimVessel().flightCtrlState.inputYaw;
+    }
+    
+    
+    // =================================================================================================================
+    
+    
+    // General Vessel Data===================================================================================================
+    
+    public AltimeterDisplayMode GetAltimeterDisplayMode()
+    {
+        return Game.ViewController.DataProvider.TelemetryDataProvider.AltimeterDisplayMode.GetValue();
+    }
+    
+    public double GetDisplayAltitude()
+    {
+        AltimeterDisplayMode altimeterDisplayMode = GetAltimeterDisplayMode();
+        return telemetryDataProvider.GetAltitudeDisplayValue(altimeterDisplayMode);
+    }
+    
+    
     /// <summary>
     /// Returns the velocity of the vessel that is displayed HUD.
-    ///
     /// </summary>
     public double GetDisplaySpeed()
     {
-        
-        KSP.Sim.SpeedDisplayMode speedDisplayMode = Game.ViewController.DataProvider.TelemetryDataProvider.SpeedDisplayMode.GetValue();
+        SpeedDisplayMode speedDisplayMode = Game.ViewController.DataProvider.TelemetryDataProvider.SpeedDisplayMode.GetValue();
         return telemetryDataProvider.GetSpeedDisplayValue(speedDisplayMode);
     }
+    
+    /// <summary>
+    /// Can be Target, Surface or Orbit.
+    /// </summary>
+    public SpeedDisplayMode GetSpeedDisplayMode()
+    {
+        return Game.ViewController.DataProvider.TelemetryDataProvider.SpeedDisplayMode.GetValue();
+    }
 
-
-
-
+    // =================================================================================================================
+    
 }
