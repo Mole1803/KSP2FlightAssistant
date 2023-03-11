@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+    <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+        <ProjectGuid>{518EA0A5-3D4A-404C-AC7B-3ED3BC254062}</ProjectGuid>
+        <OutputType>Library</OutputType>
+        <AppDesignerFolder>Properties</AppDesignerFolder>
+        <RootNamespace>KSP2FlightAssistant</RootNamespace>
+        <AssemblyName>KSP2FlightAssistant</AssemblyName>
+        <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+        <FileAlignment>512</FileAlignment>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>bin\Debug\</OutputPath>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugType>pdbonly</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>bin\Release\</OutputPath>
+        <DefineConstants>TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="UnityEngine.Modules" Version="2020.3.34" IncludeAssets="compile" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+        <Reference Include="System.Data" />
+        <Reference Include="System.Xml" />
+
+        <Reference Include="Assembly-CSharp">
+            <HintPath>G:\SteamLibrary\steamapps\common\Kerbal Space Program 2\KSP2_x64_Data\Managed\Assembly-CSharp.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="SpaceWarp">
+            <HintPath>G:\SteamLibrary\steamapps\common\Kerbal Space Program 2\BepInEx\plugins\SpaceWarp\SpaceWarp.dll</HintPath>            
+            <Private>False</Private>
+        </Reference>
+
+        <Reference Include="BepInEx">
+            <HintPath>G:\SteamLibrary\steamapps\common\Kerbal Space Program 2\BepInEx\core\BepInEx.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+
+        <Reference Include="UnityEngine">
+            <HintPath>G:\SteamLibrary\steamapps\common\Kerbal Space Program 2\KSP2_x64_Data\Managed\UnityEngine.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.CoreModule">
+            <HintPath>G:\SteamLibrary\steamapps\common\Kerbal Space Program 2\KSP2_x64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        
+    </ItemGroup>
+    
+
+    
+    <ItemGroup>
+        <Compile Include="KSP2FlightAssistant.cs" />
+        <Compile Include="Properties\AssemblyInfo.cs" />
+    </ItemGroup>
+    
+
+    
+    <ItemGroup>
+      <Content Include=".gitignore" />
+      <Content Include="swinfo.json" />
+    </ItemGroup>
+    
+    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+    <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+         Other similar extension points exist, see Microsoft.Common.targets.
+    <Target Name="BeforeBuild">
+    </Target>
+    <Target Name="AfterBuild">
+    </Target>
+    -->
+    <PropertyGroup>
+        <PostBuildEvent>
+            SET KSP2=G:\SteamLibrary\steamapps\common\Kerbal Space Program 2
+            SET MOD=KSP2FlightAssistant
+
+            IF EXIST ..\..\%MOD%  DEL /S /Q ..\..\%MOD%
+
+            MKDIR ..\..\%MOD%
+            ROBOCOPY . ..\..\%MOD% %MOD%.dll
+            
+        </PostBuildEvent>
+    </PropertyGroup>
+
+</Project>
