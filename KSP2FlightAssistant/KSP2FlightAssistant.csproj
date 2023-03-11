@@ -32,6 +32,12 @@
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <KSP2Path>G:\SteamLibrary\steamapps\common\Kerbal Space Program 2\</KSP2Path>
+        <ModName>KSP2FlightAssistant</ModName>
+        <ModPath>$(KSP2Path)BepInEx\plugins\$(ModName)\</ModPath>
+    </PropertyGroup>
+
     <ItemGroup>
         <PackageReference Include="UnityEngine.Modules" Version="2020.3.34" IncludeAssets="compile" />
     </ItemGroup>
@@ -43,28 +49,27 @@
         <Reference Include="System.Xml" />
 
         <Reference Include="Assembly-CSharp">
-            <HintPath>G:\SteamLibrary\steamapps\common\Kerbal Space Program 2\KSP2_x64_Data\Managed\Assembly-CSharp.dll</HintPath>
+            <HintPath>$(KSP2Path)KSP2_x64_Data\Managed\Assembly-CSharp.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="SpaceWarp">
-            <HintPath>G:\SteamLibrary\steamapps\common\Kerbal Space Program 2\BepInEx\plugins\SpaceWarp\SpaceWarp.dll</HintPath>            
+            <HintPath>$(KSP2Path)BepInEx\plugins\SpaceWarp\SpaceWarp.dll</HintPath>            
             <Private>False</Private>
         </Reference>
 
         <Reference Include="BepInEx">
-            <HintPath>G:\SteamLibrary\steamapps\common\Kerbal Space Program 2\BepInEx\core\BepInEx.dll</HintPath>
+            <HintPath>$(KSP2Path)BepInEx\core\BepInEx.dll</HintPath>
             <Private>False</Private>
         </Reference>
 
         <Reference Include="UnityEngine">
-            <HintPath>G:\SteamLibrary\steamapps\common\Kerbal Space Program 2\KSP2_x64_Data\Managed\UnityEngine.dll</HintPath>
+            <HintPath>$(KSP2Path)KSP2_x64_Data\Managed\UnityEngine.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="UnityEngine.CoreModule">
-            <HintPath>G:\SteamLibrary\steamapps\common\Kerbal Space Program 2\KSP2_x64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+            <HintPath>$(KSP2Path)KSP2_x64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
             <Private>False</Private>
         </Reference>
-        
     </ItemGroup>
     
 
@@ -78,6 +83,8 @@
     
     <ItemGroup>
       <Content Include=".gitignore" />
+      <Content Include="build.bat" />
+      <Content Include="build.log" />
       <Content Include="swinfo.json" />
     </ItemGroup>
     
@@ -91,15 +98,50 @@
     -->
     <PropertyGroup>
         <PostBuildEvent>
-            SET KSP2=G:\SteamLibrary\steamapps\common\Kerbal Space Program 2
+            SET KSP2="G:\SteamLibrary\steamapps\common\Kerbal Space Program 2"
             SET MOD=KSP2FlightAssistant
-
-            IF EXIST ..\..\%MOD%  DEL /S /Q ..\..\%MOD%
-
-            MKDIR ..\..\%MOD%
-            ROBOCOPY . ..\..\%MOD% %MOD%.dll
+            SET MODPATH=%KSP2:"=%\BepInEx\plugins\%MOD%
+            SET MODPATH="%MODPATH%"
             
+            echo. &gt; ..\..\build.log
+
+            IF EXIST ..\..\$(ModPath)  DEL /S /Q ..\..\%MOD%\ &amp;&amp; (
+            ECHO Deleted %MOD% &gt;&gt; ..\..\build.log
+            ) || (
+            ECHO Failed to delete %MOD% &gt;&gt; ..\..\build.log
+            )
+
+            MKDIR ..\..\%MOD% &amp;&amp; (
+            ECHO Created %MOD% &gt;&gt; ..\..\build.log
+            ) || (
+            ECHO Failed to create %MOD% &gt;&gt; ..\..\build.log
+            )
+
+            XCOPY .\%MOD%.dll ..\..\%MOD% &amp;&amp; (
+            ECHO Copied %MOD%.dll &gt;&gt; ..\..\build.log
+            ) || (
+            ECHO XCOPY failed with error code %ERRORLEVEL%. %MOD%.dll &gt;&gt; ..\..\build.log
+            )
+            
+            XCOPY ..\..\swinfo.json ..\..\%MOD% &amp;&amp; (
+            ECHO Copied swinfo.json &gt;&gt; ..\..\build.log
+            ) || (
+            ECHO XCOPY failed with error code %ERRORLEVEL%. swinfo.json &gt;&gt; ..\..\build.log
+            )
+
+            
+            IF EXIST %MODPATH%  RD /S /Q %MODPATH%\ &amp;&amp; (
+            ECHO Deleted %MODPATH% &gt;&gt; ..\..\build.log
+            ) || (
+            ECHO Failed to delete %MODPATH% &gt;&gt; ..\..\build.log
+            )
+            
+            XCOPY /e /y /i /r ..\..\%MOD% %MODPATH% &amp;&amp; (
+            ECHO Copied %MOD% to %MODPATH% &gt;&gt; ..\..\build.log
+            ) || (
+            ECHO XCOPY failed with error code %ERRORLEVEL%. %MOD% to %MODPATH% &gt;&gt; ..\..\build.log
+            )
+
         </PostBuildEvent>
     </PropertyGroup>
-
 </Project>
