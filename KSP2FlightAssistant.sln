@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KSP2FlightAssistant", "KSP2FlightAssistant\KSP2FlightAssistant.csproj", "{518EA0A5-3D4A-404C-AC7B-3ED3BC254062}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{518EA0A5-3D4A-404C-AC7B-3ED3BC254062}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{518EA0A5-3D4A-404C-AC7B-3ED3BC254062}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{518EA0A5-3D4A-404C-AC7B-3ED3BC254062}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{518EA0A5-3D4A-404C-AC7B-3ED3BC254062}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

@@ -1,7 +1,9 @@
-﻿Documentation.md
-move.bat
-launch.bat
-.idea/*
-bin/*
-obj/*
-/Folder.DotSettings.user
+﻿.idea/
+bin/
+obj/
+KSP2FlightAssistant.dll
+build.log
+build.bat
+KSP2FlightAssistant.sln.DotSettings.user
+
+

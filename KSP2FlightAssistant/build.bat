@@ -1,0 +1,2 @@
+﻿dotnet build -c Release 
+

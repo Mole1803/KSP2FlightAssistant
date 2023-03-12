@@ -1,0 +1,150 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+    <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+        <ProjectGuid>{518EA0A5-3D4A-404C-AC7B-3ED3BC254062}</ProjectGuid>
+        <OutputType>Library</OutputType>
+        <AppDesignerFolder>Properties</AppDesignerFolder>
+        <RootNamespace>KSP2FlightAssistant</RootNamespace>
+        <AssemblyName>KSP2FlightAssistant</AssemblyName>
+        <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+        <FileAlignment>512</FileAlignment>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>bin\Debug\</OutputPath>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugType>pdbonly</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>bin\Release\</OutputPath>
+        <DefineConstants>TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <KSP2Path>G:\SteamLibrary\steamapps\common\Kerbal Space Program 2\</KSP2Path>
+        
+        <ModName>KSP2FlightAssistant</ModName>
+        <ModPath>$(KSP2Path)BepInEx\plugins\$(ModName)</ModPath>
+        <FinalModFolder>$(ProjectDir)$(ModName)</FinalModFolder>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="UnityEngine.Modules" Version="2020.3.34" IncludeAssets="compile" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+        <Reference Include="System.Data" />
+        <Reference Include="System.Xml" />
+
+        <Reference Include="Assembly-CSharp">
+            <HintPath>$(KSP2Path)KSP2_x64_Data\Managed\Assembly-CSharp.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="SpaceWarp">
+            <HintPath>$(KSP2Path)BepInEx\plugins\SpaceWarp\SpaceWarp.dll</HintPath>            
+            <Private>False</Private>
+        </Reference>
+
+        <Reference Include="BepInEx">
+            <HintPath>$(KSP2Path)BepInEx\core\BepInEx.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+
+        <Reference Include="UnityEngine">
+            <HintPath>$(KSP2Path)KSP2_x64_Data\Managed\UnityEngine.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.CoreModule">
+            <HintPath>$(KSP2Path)KSP2_x64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.IMGUIModule">
+          <HintPath>$(KSP2Path)KSP2_x64_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+
+    </ItemGroup>
+    
+
+    
+    <ItemGroup>
+        <Compile Include="KSP2FlightAssistant.cs" />
+        <Compile Include="KSPService\KSPVessel.cs" />
+        <Compile Include="KSPService\KSPVesselInformation.cs" />
+        <Compile Include="MathLibrary\PIDController.cs" />
+        <Compile Include="Properties\AssemblyInfo.cs" />
+    </ItemGroup>
+    
+
+    
+    <ItemGroup>
+      <Content Include="build.bat" />
+      <Content Include="build.log" />
+      <Content Include="swinfo.json" />
+    </ItemGroup>
+    
+
+    
+    <ItemGroup>
+      <Folder Include="Controller" />
+    </ItemGroup>
+    
+    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+    <PropertyGroup>
+        <PostBuildEvent>
+            echo. &gt; ..\..\build.log
+            
+            IF EXIST $(FinalModFolder)  RD /S /Q $(FinalModFolder)\ &amp;&amp; (
+            ECHO Deleted $(FinalModFolder) &gt;&gt; ..\..\build.log
+            ) || (
+            ECHO Failed to delete $(FinalModFolder) &gt;&gt; ..\..\build.log
+            )
+
+            MKDIR $(FinalModFolder) &amp;&amp; (
+            ECHO Created $(FinalModFolder) &gt;&gt; ..\..\build.log
+            ) || (
+            ECHO Failed to create $(FinalModFolder) %ERRORLEVEL% &gt;&gt; ..\..\build.log
+            )
+
+            XCOPY .\$(ModName).dll $(FinalModFolder) &amp;&amp; (
+            ECHO Copied $(ModName).dll &gt;&gt; ..\..\build.log
+            ) || (
+            ECHO XCOPY failed with error code %ERRORLEVEL%. $(ModName).dll &gt;&gt; ..\..\build.log
+            )
+            
+            XCOPY $(ProjectDir)swinfo.json  $(FinalModFolder) &amp;&amp; (
+            ECHO Copied swinfo.json &gt;&gt; ..\..\build.log
+            ) || (
+            ECHO XCOPY failed with error code %ERRORLEVEL%. swinfo.json &gt;&gt; ..\..\build.log
+            )
+            
+            IF EXIST "$(ModPath)"  RD /S /Q "$(ModPath)\" &amp;&amp; (
+            ECHO Deleted $(ModPath) &gt;&gt; ..\..\build.log
+            ) || (
+            ECHO Failed to delete $(ModPath) &gt;&gt; ..\..\build.log
+            )
+
+            XCOPY /e /y /i /r $(FinalModFolder) "$(ModPath)" &amp;&amp; (
+            ECHO Copied $(ModName) to $(ModPath) &gt;&gt; ..\..\build.log
+            ) || (
+            ECHO XCOPY failed with error code %ERRORLEVEL%. $(ModName) to $(ModPath) &gt;&gt; ..\..\build.log
+            )
+            
+            "$(KSP2Path)KSP2_x64.exe"
+        </PostBuildEvent>
+    </PropertyGroup>
+</Project>

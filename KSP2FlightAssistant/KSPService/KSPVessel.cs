@@ -4,8 +4,6 @@ using KSP.Sim.impl;
 using KSP.Sim.State;
 
 
-namespace KSP2FlightAssistant;
-
 public class KSPVessel
 {
 
@@ -140,7 +138,10 @@ public class KSPVessel
         // Get the active Vessel
         VesselComponent = GetActiveSimVessel();
         // Create a new Flight Instruction set of typ: FlightCtrlState
-        flightCtrlState = new FlightCtrlState();
+        flightCtrlState = new FlightCtrlState()
+        {
+            mainThrottle = VesselComponent.flightCtrlState.mainThrottle,
+        };
     }
     
     /// <summary>

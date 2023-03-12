@@ -1,0 +1,13 @@
+﻿{
+  "mod_id": "KSP2FlightAssistant",
+  "name": "KSP2FlightAssistant",
+  "author": "Moritz Hartmann",
+  "description": "A flight assistant for KSP2.",
+  "source": "https://github.com/Mole1803/KSP2FlightAssistant",
+  "version": "1.0.0",
+  "dependencies": [],
+  "ksp2_version": {
+    "min": "*",
+    "max": "*"
+  }
+}
