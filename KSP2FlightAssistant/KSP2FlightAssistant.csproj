@@ -34,8 +34,10 @@
 
     <PropertyGroup>
         <KSP2Path>G:\SteamLibrary\steamapps\common\Kerbal Space Program 2\</KSP2Path>
+        
         <ModName>KSP2FlightAssistant</ModName>
-        <ModPath>$(KSP2Path)BepInEx\plugins\$(ModName)\</ModPath>
+        <ModPath>$(KSP2Path)BepInEx\plugins\$(ModName)</ModPath>
+        <FinalModFolder>$(ProjectDir)$(ModName)</FinalModFolder>
     </PropertyGroup>
 
     <ItemGroup>
@@ -70,12 +72,20 @@
             <HintPath>$(KSP2Path)KSP2_x64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
             <Private>False</Private>
         </Reference>
+        <Reference Include="UnityEngine.IMGUIModule">
+          <HintPath>$(KSP2Path)KSP2_x64_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+
     </ItemGroup>
     
 
     
     <ItemGroup>
         <Compile Include="KSP2FlightAssistant.cs" />
+        <Compile Include="KSPService\KSPVessel.cs" />
+        <Compile Include="KSPService\KSPVesselInformation.cs" />
+        <Compile Include="MathLibrary\PIDController.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
     </ItemGroup>
     
@@ -88,6 +98,12 @@
       <Content Include="swinfo.json" />
     </ItemGroup>
     
+
+    
+    <ItemGroup>
+      <Folder Include="Controller" />
+    </ItemGroup>
+    
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
          Other similar extension points exist, see Microsoft.Common.targets.
@@ -98,50 +114,45 @@
     -->
     <PropertyGroup>
         <PostBuildEvent>
-            SET KSP2="G:\SteamLibrary\steamapps\common\Kerbal Space Program 2"
-            SET MOD=KSP2FlightAssistant
-            SET MODPATH=%KSP2:"=%\BepInEx\plugins\%MOD%
-            SET MODPATH="%MODPATH%"
-            
             echo. &gt; ..\..\build.log
-
-            IF EXIST ..\..\$(ModPath)  DEL /S /Q ..\..\%MOD%\ &amp;&amp; (
-            ECHO Deleted %MOD% &gt;&gt; ..\..\build.log
+            
+            IF EXIST $(FinalModFolder)  RD /S /Q $(FinalModFolder)\ &amp;&amp; (
+            ECHO Deleted $(FinalModFolder) &gt;&gt; ..\..\build.log
             ) || (
-            ECHO Failed to delete %MOD% &gt;&gt; ..\..\build.log
+            ECHO Failed to delete $(FinalModFolder) &gt;&gt; ..\..\build.log
             )
 
-            MKDIR ..\..\%MOD% &amp;&amp; (
-            ECHO Created %MOD% &gt;&gt; ..\..\build.log
+            MKDIR $(FinalModFolder) &amp;&amp; (
+            ECHO Created $(FinalModFolder) &gt;&gt; ..\..\build.log
             ) || (
-            ECHO Failed to create %MOD% &gt;&gt; ..\..\build.log
+            ECHO Failed to create $(FinalModFolder) %ERRORLEVEL% &gt;&gt; ..\..\build.log
             )
 
-            XCOPY .\%MOD%.dll ..\..\%MOD% &amp;&amp; (
-            ECHO Copied %MOD%.dll &gt;&gt; ..\..\build.log
+            XCOPY .\$(ModName).dll $(FinalModFolder) &amp;&amp; (
+            ECHO Copied $(ModName).dll &gt;&gt; ..\..\build.log
             ) || (
-            ECHO XCOPY failed with error code %ERRORLEVEL%. %MOD%.dll &gt;&gt; ..\..\build.log
+            ECHO XCOPY failed with error code %ERRORLEVEL%. $(ModName).dll &gt;&gt; ..\..\build.log
             )
             
-            XCOPY ..\..\swinfo.json ..\..\%MOD% &amp;&amp; (
+            XCOPY $(ProjectDir)swinfo.json  $(FinalModFolder) &amp;&amp; (
             ECHO Copied swinfo.json &gt;&gt; ..\..\build.log
             ) || (
             ECHO XCOPY failed with error code %ERRORLEVEL%. swinfo.json &gt;&gt; ..\..\build.log
             )
-
             
-            IF EXIST %MODPATH%  RD /S /Q %MODPATH%\ &amp;&amp; (
-            ECHO Deleted %MODPATH% &gt;&gt; ..\..\build.log
+            IF EXIST "$(ModPath)"  RD /S /Q "$(ModPath)\" &amp;&amp; (
+            ECHO Deleted $(ModPath) &gt;&gt; ..\..\build.log
             ) || (
-            ECHO Failed to delete %MODPATH% &gt;&gt; ..\..\build.log
-            )
-            
-            XCOPY /e /y /i /r ..\..\%MOD% %MODPATH% &amp;&amp; (
-            ECHO Copied %MOD% to %MODPATH% &gt;&gt; ..\..\build.log
-            ) || (
-            ECHO XCOPY failed with error code %ERRORLEVEL%. %MOD% to %MODPATH% &gt;&gt; ..\..\build.log
+            ECHO Failed to delete $(ModPath) &gt;&gt; ..\..\build.log
             )
 
+            XCOPY /e /y /i /r $(FinalModFolder) "$(ModPath)" &amp;&amp; (
+            ECHO Copied $(ModName) to $(ModPath) &gt;&gt; ..\..\build.log
+            ) || (
+            ECHO XCOPY failed with error code %ERRORLEVEL%. $(ModName) to $(ModPath) &gt;&gt; ..\..\build.log
+            )
+            
+            "$(KSP2Path)KSP2_x64.exe"
         </PostBuildEvent>
     </PropertyGroup>
 </Project>
