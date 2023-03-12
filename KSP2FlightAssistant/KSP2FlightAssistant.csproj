@@ -92,7 +92,6 @@
 
     
     <ItemGroup>
-      <Content Include=".gitignore" />
       <Content Include="build.bat" />
       <Content Include="build.log" />
       <Content Include="swinfo.json" />
@@ -105,13 +104,6 @@
     </ItemGroup>
     
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-    <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-         Other similar extension points exist, see Microsoft.Common.targets.
-    <Target Name="BeforeBuild">
-    </Target>
-    <Target Name="AfterBuild">
-    </Target>
-    -->
     <PropertyGroup>
         <PostBuildEvent>
             echo. &gt; ..\..\build.log
