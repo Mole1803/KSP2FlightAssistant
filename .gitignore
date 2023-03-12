@@ -2,4 +2,7 @@
 bin/
 obj/
 KSP2FlightAssistant.dll
+build.log
+build.bat
+
 
